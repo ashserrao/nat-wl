@@ -128,9 +128,6 @@
       color: var(--ink);
       outline: none;
       min-width: 0;
-      user-select: text;
-      -webkit-user-select: text;
-      -webkit-touch-callout: default;
     }
 
     .copy-btn {
@@ -146,18 +143,9 @@
       transition: transform 0.1s ease, background 0.2s ease;
     }
 
-    .copy-btn:hover {
-      background: #c7f0dd;
-    }
-
-    .copy-btn:active {
-      transform: scale(0.95);
-    }
-
-    .copy-btn.copied {
-      background: #bff0d6;
-      color: #16663f;
-    }
+    .copy-btn:hover { background: #c7f0dd; }
+    .copy-btn:active { transform: scale(0.95); }
+    .copy-btn.copied { background: #bff0d6; color: #16663f; }
 
     .open-btn {
       display: flex;
@@ -183,9 +171,7 @@
       box-shadow: 0 14px 30px rgba(249, 107, 61, 0.45);
     }
 
-    .open-btn:active {
-      transform: translateY(0);
-    }
+    .open-btn:active { transform: translateY(0); }
 
     .steps {
       margin-top: 26px;
@@ -248,76 +234,52 @@
     }
 
     @media (max-width: 400px) {
-      .card {
-        padding: 26px 20px;
-      }
-
-      h1 {
-        font-size: 1.35rem;
-      }
-
-      .copy-btn {
-        padding: 8px 10px;
-      }
+      .card { padding: 26px 20px; }
+      h1 { font-size: 1.35rem; }
+      .copy-btn { padding: 8px 10px; }
     }
   </style>
 </head>
-
 <body>
   <main class="card">
     <div class="emoji-badge" aria-hidden="true">🎁</div>
-
     <h1>My Amazon Wishlist</h1>
-
     <p class="subtitle">Tap below to view my wishlist on Amazon</p>
 
     <div class="notice" role="note">
       <span class="notice-icon" aria-hidden="true">🌐</span>
-      <p>
-        <strong>Please open in your browser.</strong>
-        This link may not load correctly inside the Amazon app. If it opens in the app,
-        copy the link and paste it into Safari or Chrome.
-      </p>
+      <p><strong>Please open in your browser.</strong> This link may not load correctly inside the Amazon app. If it opens in the app, copy the link and paste it into Safari or Chrome.</p>
     </div>
 
     <label class="url-label" for="wishlistUrl">Wishlist link</label>
-
+    <!--<div class="url-box">-->
+    <!--  <input id="wishlistUrl" type="text" readonly-->
+    <!--    value="https://www.amazon.ie/hz/wishlist/ls/1D22MLWYPWWDE" />-->
+    <!--  <button class="copy-btn" id="copyBtn" type="button">Copy</button>-->
+    <!--</div>-->
     <div class="url-box">
-      <input
-        id="wishlistUrl"
-        type="text"
-        value="https://www.amazon.ie/hz/wishlist/ls/1D22MLWYPWWDE"
-        spellcheck="false"
-        autocomplete="off"
-        autocorrect="off"
-        autocapitalize="off"
-      />
-      <button class="copy-btn" id="copyBtn" type="button">Copy</button>
-    </div>
+  <input id="wishlistUrl" type="text" readonly
+    value="https://www.amazon.ie/hz/wishlist/ls/1D22MLWYPWWDE" />
+</div>
 
-    <a
-      class="open-btn"
-      href="https://www.amazon.ie/hz/wishlist/ls/1D22MLWYPWWDE"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      <span aria-hidden="true">🛒</span>
-      Open Wishlist in Browser
-    </a>
+    <!--<a class="open-btn" id="openBtn" href="https://www.amazon.ie/hz/wishlist/ls/1D22MLWYPWWDE"-->
+    <!--   target="_blank" rel="noopener noreferrer">-->
+    <!--  <span aria-hidden="true">🛒</span> Open Wishlist in Browser-->
+    <!--</a>-->
+    <button class="open-btn" id="copyBtn" type="button">
+        <span aria-hidden="true">🛒</span> Copy Wishlist Link
+    </button>
 
     <section class="steps">
       <h2>If it opens in the Amazon app:</h2>
-
       <div class="step">
         <span class="step-num">1</span>
         <p>Tap the <strong>Copy</strong> button above to copy the link.</p>
       </div>
-
       <div class="step">
         <span class="step-num">2</span>
         <p>Open your browser (Safari, Chrome, etc.).</p>
       </div>
-
       <div class="step">
         <span class="step-num">3</span>
         <p>Paste the link in the address bar and press Go.</p>
@@ -328,57 +290,40 @@
   <div class="toast" id="toast">Link copied to clipboard!</div>
 
   <script>
-    const copyBtn = document.getElementById("copyBtn");
-    const urlInput = document.getElementById("wishlistUrl");
-    const toast = document.getElementById("toast");
-
-    let toastTimer;
+    var copyBtn = document.getElementById("copyBtn");
+    var urlInput = document.getElementById("wishlistUrl");
+    var toast = document.getElementById("toast");
+    var toastTimer;
 
     function showToast(message) {
       toast.textContent = message;
       toast.classList.add("show");
-
       clearTimeout(toastTimer);
-
-      toastTimer = setTimeout(() => {
+      toastTimer = setTimeout(function () {
         toast.classList.remove("show");
       }, 2200);
     }
 
     async function copyUrl() {
-      const text = urlInput.value;
-
+      var text = urlInput.value;
       try {
-        if (navigator.clipboard && window.isSecureContext) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
           await navigator.clipboard.writeText(text);
         } else {
-          urlInput.focus();
           urlInput.select();
-          urlInput.setSelectionRange(0, text.length);
-
-          const copied = document.execCommand("copy");
-
-          if (!copied) {
-            throw new Error("Copy failed");
-          }
+          urlInput.setSelectionRange(0, 99999);
+          document.execCommand("copy");
         }
-
         copyBtn.textContent = "Copied!";
         copyBtn.classList.add("copied");
-
         showToast("Link copied to clipboard!");
-
-        setTimeout(() => {
+        setTimeout(function () {
           copyBtn.textContent = "Copy";
           copyBtn.classList.remove("copied");
         }, 2000);
-
       } catch (err) {
-        urlInput.focus();
         urlInput.select();
-        urlInput.setSelectionRange(0, text.length);
-
-        showToast("Select and copy the link manually");
+        showToast("Press Ctrl/Cmd + C to copy");
       }
     }
 
